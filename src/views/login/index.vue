@@ -75,7 +75,10 @@ export default {
         this.$router.push('/profile')
         this.$toast.success('登录成功')
       } catch (err) {
-        if (err.response && err.response.status === 400) {
+        // 1. ??===> 相当于||,常用于语句
+        // 2. ?.===>可选链操作符,?前面是undifiend,那么不会往后取值
+        // if (err.response && err.response.status === 400)
+        if (err.response?.status === 400) {
           this.$toast.fail(err.response.data.message)
         }
         this.$toast.clear()

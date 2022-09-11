@@ -70,7 +70,7 @@ export default {
       this.loading()
       try {
         const { data } = await login(this.mobile, this.code)
-        console.log(data)
+        // console.log(data)
         this.SET_TOKEN(data.data)
         this.$router.push('/profile')
         this.$toast.success('登录成功')

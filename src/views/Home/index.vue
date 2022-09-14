@@ -19,19 +19,27 @@
       closeable
       close-icon-position="top-left"
      >
-     <ChannelEdit :myChannels='channels' @change-active="[isShow=false,active=$event]"></ChannelEdit>
+     <ChannelEdit
+     v-if="isShow"
+     :myChannels='channels'
+     @change-active="[isShow=false,active=$event]"
+     @del-channel='delChannel'
+     @add-channel="addChannel"
+     ></ChannelEdit>
      </van-popup>
   </div>
 </template>
 
 <script>
-import { getChannelAPI } from '@/api'
+import { getChannelAPI, delChannelAPI, addChannelAPI } from '@/api'
 import ArticleList from '@/views/Home/components/ArticleList.vue'
 import ChannelEdit from './components/ChannelEdit.vue'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   components: { ArticleList, ChannelEdit },
   created () {
-    this.getMyChannel()
+    this.initChinnel()
+    // this.getMyChannel()
   },
   data () {
     return {
@@ -40,7 +48,22 @@ export default {
       isShow: false
     }
   },
+  computed: {
+    ...mapGetters(['isLogin'])
+  },
   methods: {
+    ...mapMutations(['SET_MY_CHANNELS']),
+    initChinnel () {
+      if (this.isLogin) {
+        this.getMyChannel()
+      } else {
+        if (this.$store.state.myChannels.length === 0) {
+          this.getMyChannel()
+        } else {
+          this.channels = this.$store.state.myChannels
+        }
+      }
+    },
     async getMyChannel () {
       try {
         const { data: { data } } = await getChannelAPI()
@@ -52,6 +75,41 @@ export default {
         } else {
           const status = err.response.status
           status === 507 && this.$toast.fail('请刷新')
+        }
+      }
+    },
+    async delChannel (id) {
+      const newChannels = this.channels.filter((item) => item.id !== id)
+      try {
+        if (this.isLogin) {
+          await delChannelAPI(id)
+        } else {
+          this.SET_MY_CHANNELS(newChannels)
+        }
+        this.channels = newChannels
+        this.$toast.success('删除频道成功~')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再删除~')
+        } else {
+          throw error
+        }
+      }
+    },
+    async addChannel (item) {
+      try {
+        if (this.isLogin) {
+          await addChannelAPI(item.id, this.channels.length)
+        } else {
+          this.SET_MY_CHANNELS([...this.channels, item])
+        }
+        this.channels.push(item)
+        this.$toast.success('添加频道成功~')
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          this.$toast.fail('请登录再添加~')
+        } else {
+          throw error
         }
       }
     },

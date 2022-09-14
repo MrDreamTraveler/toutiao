@@ -29,13 +29,14 @@
       </van-grid>
     </div>
     <van-cell title="推荐频道" ></van-cell>
-    <div class="recommend-pannel">
+    <div class="recommend-pannel" >
       <van-grid :gutter="10" :border="false">
         <van-grid-item
           v-for="value in commendChannes"
           :key="value.id"
           :text="value.name"
           icon="plus"
+          @click="$emit('add-channel',value)"
         >
           <!-- <template #icon>
             <van-icon name="plus" />
@@ -67,9 +68,9 @@ export default {
       // console.log(data)
       this.allChannels = data.data.channels
     },
-    hanleMyChannel ({ name }, index) {
+    hanleMyChannel ({ name, id }, index) {
       if (this.isEdit && name !== '推荐') {
-        console.log(name)
+        this.$emit('del-channel', id)
       } else {
         this.$emit('change-active', index)
       }

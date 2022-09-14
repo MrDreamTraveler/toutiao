@@ -19,3 +19,20 @@ export const getAllChannelAPI = () => {
     url: '/v1_0/channels'
   })
 }
+
+export const delChannelAPI = (id) => {
+  return request({
+    method: 'DELETE',
+    url: `/v1_0/user/channels/${id}`
+  })
+}
+
+export const addChannelAPI = (id, seq) => {
+  return request({
+    url: '/v1_0/user/channels',
+    method: 'PATCH',
+    data: {
+      channels: [{ id, seq }]
+    }
+  })
+}

@@ -2,7 +2,7 @@
   <div>
     <van-nav-bar class="navbar">
       <template #title>
-        <van-button type="default" round block size="small">搜索</van-button>
+        <van-button type="default" round block size="small" to="/search">搜索</van-button>
       </template>
     </van-nav-bar>
     <van-tabs v-model="active"  swipeable >
